@@ -1,7 +1,8 @@
 import { View } from "react-native"
-import { Bozhan } from "./Home"
-import color from "../static/ts/color"
+import { Bozhan } from "./Bozhan"
 import { useSelector } from "react-redux"
+import color from "../static/ts/color"
+
 export default function Innn() {
   const { theme } = useSelector(state => state)
   return (

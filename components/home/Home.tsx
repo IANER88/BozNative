@@ -18,12 +18,17 @@ import { SvgXml } from "react-native-svg";
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux"
 import color from "../../static/ts/color"
-import {Bozhan} from "../Home"
+import { Bozhan } from "../Bozhan"
 
 export default function Home(props:any) {
-  const { theme } = useSelector(state => state)
+  const { theme,nav } = useSelector(state => state)
   const win = Dimensions.get("window")
   const dispatch = useDispatch()
+  // if(nav !== "flex"){
+  //   dispatch({
+  //     type: "update-nav-true"
+  //   })
+  // }
   let width = win.width - 30
   interface SlideShow {
     describe: string,
@@ -143,12 +148,16 @@ export default function Home(props:any) {
     // 跳转至文章页
     props.navigation.push("article",object)
   }
-  const [nav, setNav] = useState<any>([])
+  const [navs, setNavs] = useState<any>([])
   const [fild, setArtile] = useState<any>([])
   const [state, setState] = useState({
     name: "推荐"
   })
-
+  const onScroll = (event) =>{
+    const { y,bottom } = event.nativeEvent.contentOffset
+    console.log(y);
+    
+  }
   useEffect(() => {
     (async () => {
       const resolve = await axios.get("http://fetch.bozhan.top/home")
@@ -159,7 +168,7 @@ export default function Home(props:any) {
       const tag = await axios.patch("http://fetch.bozhan.top/tag")
       const { data: { article } } = await axios.put(`http://fetch.bozhan.top/article?name=browse&id=1`)
       setData(resolve.data)
-      setNav(tag.data.nav)
+      setNavs(tag.data.nav)
       setArtile(article)
     })()
     return () => {
@@ -172,7 +181,8 @@ export default function Home(props:any) {
         height: win.height,
         backgroundColor: color[theme].background,
         paddingBottom: 0,
-      }}>
+
+      }} onScroll={onScroll}>
         <View style={{
           backgroundColor: color[theme].tintBackground,
           height: 46,
@@ -292,7 +302,7 @@ export default function Home(props:any) {
             }}>
               <Text style={{ fontSize: 12, color: color[theme].tintColor, fontWeight: state.name === "推荐" && "bold" }}>推荐</Text>
               {
-                nav.map((item: any) => {
+                navs.map((item: any) => {
                   return (
                     <Text key={item.name} style={{ fontSize: 12, color: color[theme].tintColor }}>
                       {item.name}

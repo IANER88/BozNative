@@ -38,7 +38,6 @@ import Chat from "./components/Chat"
 import Me from "./components/Me"
 import { SvgXml } from "react-native-svg"
 import icon from "./static/ts/icon"
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import color from "./static/ts/color"
 const Tab = createBottomTabNavigator();
 type SectionProps = PropsWithChildren<{

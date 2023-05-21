@@ -1,5 +1,5 @@
 import { View } from "react-native"
-import { Bozhan } from "./Home"
+import { Bozhan } from "./Bozhan"
 import color from "../static/ts/color"
 import { useSelector } from "react-redux"
 export default function Me() {

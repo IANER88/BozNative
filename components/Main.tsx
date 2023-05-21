@@ -5,7 +5,7 @@ export default function Main(props: any) {
     <Stack.Navigator screenOptions={{
       headerShown: false,
       gestureEnabled: false,
-      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
     }}>
       {
         props.router.map((item: any) => (
