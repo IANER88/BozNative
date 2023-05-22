@@ -4021,6 +4021,11 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+he@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
+  integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
 hermes-estree@0.8.0:
   version "0.8.0"
   resolved "https://registry.npmmirror.com/hermes-estree/-/hermes-estree-0.8.0.tgz#530be27243ca49f008381c1f3e8b18fb26bf9ec0"
@@ -6164,11 +6169,6 @@ react-native-paper@^5.8.0:
     "@callstack/react-theme-provider" "^3.0.8"
     color "^3.1.2"
     use-latest-callback "^0.1.5"
-
-react-native-prism@^5.0.7:
-  version "5.0.7"
-  resolved "https://registry.npmmirror.com/react-native-prism/-/react-native-prism-5.0.7.tgz#d79f4d16a4dac74dd62a8422a9dd36754dfbe117"
-  integrity sha512-CL1q5a/8I2b0BhM/0lUYMD+HMONHac+aCY9rEe7cZelJWZs3i5yMNzzW7+eSfC0w2u2Xv2FrUg+J88cay0VTOA==
 
 react-native-render-html@^6.3.4:
   version "6.3.4"

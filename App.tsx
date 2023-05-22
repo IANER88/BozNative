@@ -106,9 +106,6 @@ export default function App(): JSX.Element {
                 } else {
                   nav[route.name] = nav[route.name].replace("fill=\"#409EFF\"", "fill=\"#bfbfbf\"")
                 }
-                if (theme === "dark") {
-                  nav[route.name].icon = nav[route.name].icon.replace("fill=\"#bfbfbf\"", `fill=\"${color[theme].color}\"`)
-                }
                 return (
                   <TouchableOpacity onPress={
                     () => {
@@ -152,6 +149,9 @@ export default function App(): JSX.Element {
                   display: useSelector(state => state).nav,
                   flexDirection: "column",
                   alignItems: "center",
+                  backgroundColor:color[theme].background,
+                  // borderColor:color[theme].solid,
+                  // borderStartWidth:1,
                   paddingHorizontal: 10,
                 }
               ]

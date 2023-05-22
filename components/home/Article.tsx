@@ -9,7 +9,7 @@ import {
 } from "react-native"
 import { Bozhan } from "../Bozhan"
 import { useDispatch } from "react-redux"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSelector } from "react-redux"
 import axios from "axios"
 import { SvgXml } from "react-native-svg"
@@ -17,6 +17,7 @@ import icon from "../../static/ts/icon"
 import color from "../../static/ts/color"
 import HTML from "react-native-render-html"
 import Prism from "../../static/ts/prism";
+import he from "he"
 
 export default function Article(props: any) {
   const dispatch = useDispatch()
@@ -44,16 +45,47 @@ export default function Article(props: any) {
       avatar: "1"
     },
     tag: [],
-    content: "<div></div>"
+    content: "<div></div>",
+    like: {
+      count: 0
+    },
+    collect: {
+      count: 0
+    },
+    comments: {
+      comment: [
+        {
+          author: {
+            avatar: "http://fetch.bozhan.top/media/avatar/jay.jpg"
+          }
+        },
+      ],
+      count: 0,
+
+    }
   })
   const [boolean, setBolean] = useState<boolean>(false)
   useEffect(() => {
     const fetch = async () => {
       const { name, id } = props.route.params
       const { data } = await axios.get(`http://fetch.bozhan.top/article?name=${name}&id=${id}`)
-      setState(data)
-      // console.log(data.content);
+      data.content = data.content.replaceAll(/<pre>(.*?)<\/pre>/igs, (element: string) => {
+        const regex = /<code\s+class="(\S+\s+)?language-(\w+)"/i;
+        const matches = element.match(regex);
+        if (matches && matches.length > 2) {
+          const language: string = matches[2]; // 匹配到的 language 值
+          return element.replace(/<\/?pre>/g, '').replace(/<code(.*?)>(.*?)<\/code>/gs, (code) => {
 
+            const text = Prism.highlight(he.decode(code.replace(/<\/?code>/g, '').replace(/<code(.*?)>/g, "")), Prism.languages[language]， language)
+
+            return `<pre><code>${text}</code></pre>`
+          })
+        } else {
+          return element
+        }
+      })
+      // console.log(data.content);
+      setState(data)
     }
     dispatch({
       type: "update-nav-false"
@@ -63,6 +95,23 @@ export default function Article(props: any) {
   }, [])
   const value = new Animated.Value(0)
 
+  const bottomNav = [
+    {
+      name: state.comments.count === 0 ? "评论" : state.comments.count,
+      icon: icon.article.comment,
+      width: 20,
+    },
+    {
+      name: state.like.count === 0 ? "点赞" : state.like.count,
+      icon: icon.article.like,
+      width: 17,
+    },
+    {
+      name: state.collect.count === 0 ? "收藏" : state.collect.count,
+      icon: icon.article.collect,
+      width: 20,
+    },
+  ]
   return (
     <Bozhan boolean={false} top={-220} left={-90} scale={2}>
       <View style={{
@@ -107,12 +156,8 @@ export default function Article(props: any) {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            gap: 15
+            gap: 20
           }}>
-            <SvgXml xml={icon.article.like} width={20} />
-            <SvgXml xml={icon.article.collect} width={22} style={{
-              top: -1
-            }} />
             <SvgXml xml={icon.article.share} width={17} />
             <SvgXml xml={icon.article.more} width={17} />
           </View>
@@ -152,7 +197,8 @@ export default function Article(props: any) {
                 <View style={{ height: 45, display: "flex", justifyContent: "space-around" }}>
                   <Text style={{ fontWeight: "bold", color: color[theme].color }}>{state.author.name}</Text>
                   <Text style={{
-                    fontSize: 12
+                    fontSize: 12,
+                    color: color[theme].tintColor
                   }}>{state.browse} 阅读·{state.create_time && state.create_time.split(" ")[0]}</Text>
                 </View>
                 {/* 关注按钮 */}
@@ -183,11 +229,11 @@ export default function Article(props: any) {
                 state.tag && state.tag.map((item: any) => {
                   return (
                     <TouchableOpacity key={item.name} style={{
-                      backgroundColor: "#ecf5ff",
+                      backgroundColor: color[theme].tagBackground,
                       paddingHorizontal: 5,
                       paddingVertical: 5,
                       borderRadius: 8,
-                      borderColor: "#d9ecff",
+                      borderColor: theme === "dark" ? "none" : color[theme].mainColor,
                       borderWidth: 1,
                     }}>
                       <Text style={{ color: theme === "dark" ? "#fff" : "#409eff", fontSize: 12, }}>
@@ -203,11 +249,6 @@ export default function Article(props: any) {
         <HTML contentWidth={200} source={{ html: state.content }}
           baseFontStyleText={{
             color: color[theme].color
-          }}
-          renderers={{
-            a: {
-
-            }
           }}
           tagsStyles={{
             h1: {
@@ -226,7 +267,8 @@ export default function Article(props: any) {
               color: color[theme].color
             },
             p: {
-              lineHeight: 22
+              lineHeight: 22,
+              color: color[theme].color
             },
             ol: {
               // paddingLeft:,
@@ -241,7 +283,100 @@ export default function Article(props: any) {
             }
           }}
         />
+        {/* 评论区块 */}
+        <View style={{
+          borderColor: color[theme].solid,
+          borderTopWidth: 1,
+          paddingVertical: 15
+        }}>
+          {
+            state.comments.comment.map((item: any) => {
+              return (
+                <View key={item.id} style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  paddingVertical: 10,
+                  gap: 10,
+                }}>
+                  <Image source={{ uri: item.author.avatar.replace("https", "http") }} style={{
+                    width: 35,
+                    height: 35,
+                    borderRadius: 8,
+                  }} />
+                  <View>
+                    <Text style={{
+                      fontSize: 12,
+                      color: color[theme].tintColor
+                    }}>{item.author.name}·{item.time && item.time.split(" ")[0]}</Text>
+                    <HTML contentWidth={200} source={{ html: item.content }} tagsStyles={{
+                      a: {
+                        color: color[theme].mainColor,
+                        textDecorationLine: undefined
+                      },
+
+                    }} />
+                  </View>
+                </View>
+              )
+            })
+          }
+        </View>
       </ScrollView>
+      <View style={{
+        height: 60,
+        backgroundColor: color[theme].background,
+        borderColor: color[theme].solid,
+        borderTopWidth: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 15,
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+      }}>
+        <View style={{
+          width: "65%",
+          height: "100%",
+          backgroundColor: color[theme].tintBackground,
+          borderRadius: 30,
+          paddingLeft: 10,
+          display: "flex",
+          justifyContent: "center"
+        }} >
+          <Text>我想评论</Text>
+        </View>
+        <View style={{
+          width: "30%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          // gap: 20,
+          justifyContent: "space-between"
+        }}>
+          {
+            bottomNav.map((item, index) => {
+              return (
+                <TouchableOpacity style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  top: 5,
+                  // gap:2,
+                }} key={index}>
+                  <SvgXml xml={item.icon} width={item.width} />
+                  {
+                    item.name && <Text style={{
+                      fontSize: 11,
+                      top: -9,
+                      // color:
+                    }}>{item.name}</Text>
+                  }
+                </TouchableOpacity>
+              )
+            })
+          }
+        </View>
+      </View>
     </Bozhan>
   )
 }
