@@ -6,29 +6,22 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StatusBar,
 } from "react-native"
 import {
   useEffect,
   useState,
-  memo
 } from "react"
 import Swiper from "react-native-swiper";
 import { SvgXml } from "react-native-svg";
+import type { store } from "../../static/ts/store"
 import axios from "axios"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import color from "../../static/ts/color"
 import { Bozhan } from "../Bozhan"
 
-export default function Home(props:any) {
-  const { theme,nav } = useSelector(state => state)
+export default function Home(props: any) {
+  const { theme } = useSelector(state => state) as store
   const win = Dimensions.get("window")
-  const dispatch = useDispatch()
-  // if(nav !== "flex"){
-  //   dispatch({
-  //     type: "update-nav-true"
-  //   })
-  // }
   let width = win.width - 30
   interface SlideShow {
     describe: string,
@@ -93,7 +86,7 @@ export default function Home(props:any) {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "center",
+              // justifyContent: "center",
             }}>
               <Text style={{
                 fontSize: 10,
@@ -103,7 +96,6 @@ export default function Home(props:any) {
                 width: 12,
                 height: 12,
                 position: "relative",
-                top: 2
               }} source={require("../../static/image/right.png")} />
             </View>
           </View>
@@ -120,14 +112,14 @@ export default function Home(props:any) {
 
   const unit = (val: number) => {
     if (val === undefined) return;
-    const numberArray = (val) => {
+    const numberArray = (val: number) => {
       const nun = String(val).split("");
       /*
         长度大过 4 往前推移 1 位 保留一位小数
         即 1000 -> 1K to 10000 -> 10K to 10001 -> 1.1w
       */
-      const tuiyi = ({ val, num = 2, unit = "k" }) => {
-        const str = (str) => str.toString().replaceAll(",", "");
+      const tuiyi = ({ val, num = 2, unit = "k" }: any) => {
+        const str = (str: string) => str.toString().replaceAll(",", "");
         const to = val.slice(0, val.length - num);
         const len = to.length - 1;
         const first = str(to.slice(0, len));
@@ -144,19 +136,19 @@ export default function Home(props:any) {
     };
     return numberArray(val);
   }
-  const toArticle = (object:object) =>{
+  const toArticle = (object: object) => {
     // 跳转至文章页
-    props.navigation.push("article",object)
+    props.navigation.push("article", object)
   }
   const [navs, setNavs] = useState<any>([])
   const [fild, setArtile] = useState<any>([])
   const [state, setState] = useState({
     name: "推荐"
   })
-  const onScroll = (event) =>{
-    const { y,bottom } = event.nativeEvent.contentOffset
+  const onScroll = (event: any) => {
+    const { y, bottom } = event.nativeEvent.contentOffset
     console.log(y);
-    
+
   }
   useEffect(() => {
     (async () => {
@@ -228,7 +220,7 @@ export default function Home(props:any) {
             }}>
             {
               data.slideshow.map((item: any) => (
-                <Image key={item.describe} source={{ uri: item.img.replace("https","http") }} style={{
+                <Image key={item.describe} source={{ uri: item.img.replace("https", "http") }} style={{
                   width: "100%",
                   height: 140,
                   resizeMode: "contain",
@@ -300,7 +292,7 @@ export default function Home(props:any) {
               marginLeft: 15,
               marginTop: 10,
             }}>
-              <Text style={{ fontSize: 12, color: color[theme].tintColor, fontWeight: state.name === "推荐" && "bold" }}>推荐</Text>
+              <Text style={{ fontSize: 12, color: color[theme].tintColor, fontWeight: state.name === "推荐" ? "bold" : "normal" }}>推荐</Text>
               {
                 navs.map((item: any) => {
                   return (
@@ -327,11 +319,11 @@ export default function Home(props:any) {
                     borderBottomWidth: 1,
                     borderColor: color[theme].solid,
                     paddingBottom: 10,
-                  }} onPress={()=> toArticle({
-                    id:item.id,
+                  }} onPress={() => toArticle({
+                    id: item.id,
                     name: item.author.alias
-                  }) }>
-                    {item.image && <Image source={{ uri: item.image.replace("https","http") }} style={{
+                  })}>
+                    {item.image && <Image source={{ uri: item.image.replace("https", "http") }} style={{
                       width: 110,
                       height: 80,
                       borderRadius: 8,
@@ -370,7 +362,7 @@ export default function Home(props:any) {
                             gap: 5,
                           }}>
                             {
-                              item.tag.slice(0, 2).map(home => {
+                              item.tag.slice(0, 2).map((home: any) => {
                                 return <View key={home.id} style={{
                                   height: 20,
                                   backgroundColor: color[theme].tagBackground,

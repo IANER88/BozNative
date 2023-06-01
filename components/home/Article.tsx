@@ -8,7 +8,6 @@ import {
   Animated
 } from "react-native"
 import { Bozhan } from "../Bozhan"
-import { useDispatch } from "react-redux"
 import { useEffect, useState, useRef } from "react"
 import { useSelector } from "react-redux"
 import axios from "axios"
@@ -20,8 +19,7 @@ import Prism from "../../static/ts/prism";
 import he from "he"
 
 export default function Article(props: any) {
-  const dispatch = useDispatch()
-  const { theme, nav }: any = useSelector(state => state)
+  const { theme }: any = useSelector(state => state)
   interface State {
     answer: string,
     article: number,
@@ -75,9 +73,7 @@ export default function Article(props: any) {
         if (matches && matches.length > 2) {
           const language: string = matches[2]; // 匹配到的 language 值
           return element.replace(/<\/?pre>/g, '').replace(/<code(.*?)>(.*?)<\/code>/gs, (code) => {
-
-            const text = Prism.highlight(he.decode(code.replace(/<\/?code>/g, '').replace(/<code(.*?)>/g, "")), Prism.languages[language]， language)
-
+            const text = Prism.highlight(he.decode(code.replace(/<\/?code>/g, '').replace(/<code(.*?)>/g, "")), Prism.languages[language], language)
             return `<pre><code>${text}</code></pre>`
           })
         } else {
@@ -132,9 +128,6 @@ export default function Article(props: any) {
         }}>
           <TouchableOpacity onPress={() => {
             props.navigation.goBack()
-            dispatch({
-              type: "update-nav-true"
-            })
           }}>
             <SvgXml xml={icon.article.cancel} style={{
               left: -10,
@@ -278,7 +271,6 @@ export default function Article(props: any) {
             pre: {
               backgroundColor: "#282C34",
               borderRadius: 8,
-              color: "#fff",
               padding: 10,
             }
           }}
